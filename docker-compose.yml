@@ -10,7 +10,7 @@ services:
       - appdata:/app/data
 
     frontend:
-      build: ./client
+      build: ./Client
       ports:
         - "8081:3000"
       depends_on:
