@@ -1,6 +1,8 @@
 using API;
 using Infrastructure.DataAccess;
+using Infrastructure.Repositories;
 using LinqToDB;
+using Service.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=db.db";
@@ -8,6 +10,8 @@ var options = new DataOptions<UserDatabase>(new DataOptions().UseSQLite(connecti
 builder.Services.AddScoped<UserDatabase>(_ => new UserDatabase(options));
 builder.Services.AddScoped<Seeder>();
 builder.Services.AddControllers();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddOpenApiDocument();
 builder.Services.AddCors();
 

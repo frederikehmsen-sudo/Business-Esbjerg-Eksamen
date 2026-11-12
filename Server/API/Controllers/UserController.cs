@@ -9,8 +9,8 @@ namespace API.Controllers;
 [Route("api/[controller]")]
 public class UserController(IUserService userService) : ControllerBase
 {
-    private Role ActorRole =>
-        Enum.Parse<Role>(User.FindFirstValue(ClaimTypes.Role)!);
+    private Role ActorRole => Role.Admin;
+    private int ActorId => 1;
     
     [HttpGet]
     public List<UserResponse> GetAll()
@@ -29,9 +29,6 @@ public class UserController(IUserService userService) : ControllerBase
         catch (InvalidOperationException) { return Conflict("Username already exists."); }
         catch (ArgumentException e) { return BadRequest(e.Message); }
     }
-    
-    private int ActorId =>
-        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
     
     [HttpDelete("{id}")]
     public IActionResult DeleteUser(int id)
