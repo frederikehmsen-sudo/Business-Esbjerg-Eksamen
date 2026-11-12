@@ -1,28 +1,37 @@
 ﻿using Infrastructure.Entities;
 using Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Service.DTOs;
+using Service.Security;
 
 namespace Service.Implementation;
 
-public class UserService(IUserRepository userRepository) : IUserService
+public class UserService(IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserService
 {
     public List<UserResponse> GetUsers(Role role)
     {
+        if (!CanSeeList(role))
+            throw new UnauthorizedAccessException("You are not allowed to see the user list.");
 
         return userRepository.GetAll()
             .Select(u => new UserResponse(u.Id, u.Username, u.Role.ToString()))
             .ToList();
     }
 
+    private static bool CanSeeList(Role actor) => actor == Role.Admin;
+
     public UserResponse CreateUser(Role actorRole, CreateUserRequest request)
     {
         if (string.IsNullOrWhiteSpace(request.Username) || string.IsNullOrWhiteSpace(request.Password))
             throw new ArgumentException("Username and password are required.");
 
+        if (!CanCreate(actorRole, request.Role))
+            throw new UnauthorizedAccessException("You are not allowed to create this role.");
+        
         var user = new User
         {
             Username = request.Username,
-            Password = request.Password,
+            Password = passwordHasher.HashAndSaltPassword(request.Password),
             Role = request.Role
         };
 
@@ -31,12 +40,7 @@ public class UserService(IUserRepository userRepository) : IUserService
 
         return new UserResponse(user.Id, user.Username, user.Role.ToString());
     }
-    private static bool CanCreate(Role actor, Role target) => actor switch
-    {
-        Role.Admin => true,
-        Role.Accountant => target == Role.Employee,
-        _ => false
-    };  
+    private static bool CanCreate(Role actor, Role target) => actor == Role.Admin;
 
     public void DeleteUser(Role actorRole, int actorId, int targetId)
     {
@@ -46,15 +50,13 @@ public class UserService(IUserRepository userRepository) : IUserService
         if (target.Id == actorId)
             throw new InvalidOperationException("You cannot delete yourself.");
         
+        if (!CanDelete(actorRole, target.Role))
+            throw new UnauthorizedAccessException("You are not allowed to delete this role.");
+
 
         userRepository.DeleteUser(target);
     }
-    private static bool CanDelete(Role actor, Role target) => actor switch
-    {
-        Role.Admin => true,
-        Role.Accountant => target == Role.Employee,
-        _ => false
-    };  
+    private static bool CanDelete(Role actor, Role target) => actor == Role.Admin;
 
     public UserResponse UpdateUser(Role actorRole, int actorId, int targetId, UpdateUserRequest request)
     {
@@ -64,8 +66,14 @@ public class UserService(IUserRepository userRepository) : IUserService
         if (string.IsNullOrWhiteSpace(request.Username))
             throw new ArgumentException("Username is required.");
 
+        if (!CanUpdate(actorRole, target.Role))
+            throw new UnauthorizedAccessException("You are not allowed to edit this user.");
+
         var newRole = request.Role ?? target.Role;
         
+        if (!CanUpdate(actorRole, newRole))
+            throw new UnauthorizedAccessException("You are not allowed to assign this role.");
+
         
         if (target.Id == actorId && newRole != target.Role)
             throw new InvalidOperationException("You cannot change your own role.");
@@ -76,16 +84,15 @@ public class UserService(IUserRepository userRepository) : IUserService
 
         target.Username = request.Username;
         target.Role = newRole;
+        
+        if (!string.IsNullOrWhiteSpace(request.Password))
+            target.Password = passwordHasher.HashAndSaltPassword(request.Password);
+
 
         userRepository.UpdateUser(target);
 
         return new UserResponse(target.Id, target.Username, target.Role.ToString());
     }
     
-    private static bool CanUpdate(Role actor, Role target) => actor switch
-    {
-        Role.Admin => true,
-        Role.Accountant => target == Role.Employee,
-        _ => false
-    };
+    private static bool CanUpdate(Role actor, Role target) => actor == Role.Admin;
 }
