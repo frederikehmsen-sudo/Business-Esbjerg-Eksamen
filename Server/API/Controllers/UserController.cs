@@ -33,12 +33,12 @@ public class UserController(IUserService userService) : ControllerBase
         catch (InvalidOperationException) { return Conflict("Username already exists."); }
         catch (ArgumentException e) { return BadRequest(e.Message); }
     }
-    private int ActorId =>
-        int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+    
+    private Guid ActorId => Guid.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
     [Authorize(Roles = "Admin")]
-    [HttpDelete("{id}")]
-    public IActionResult DeleteUser(int id)
+    [HttpDelete("{id:guid}")]
+    public IActionResult DeleteUser(Guid id)
     {
         try
         {
@@ -51,8 +51,8 @@ public class UserController(IUserService userService) : ControllerBase
     }
     
     [Authorize(Roles = "Admin")]
-    [HttpPut("{id}")]
-    public IActionResult UpdateUser(int id, [FromBody] UpdateUserRequest request)
+    [HttpPut("{id:guid}")]
+    public IActionResult UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
     {
         try
         {

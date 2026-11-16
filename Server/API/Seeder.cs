@@ -14,7 +14,7 @@ public class Seeder(UserDatabase db, IPasswordHasher passwordHasher)
         {
             db.Insert(new User
             {
-                Id = 1,
+                Id = Guid.Parse("11111111-1111-1111-1111-111111111111"),
                 Username = "Bennington",
                 Password = passwordHasher.HashAndSaltPassword("ben"),
                 Role = Role.Admin

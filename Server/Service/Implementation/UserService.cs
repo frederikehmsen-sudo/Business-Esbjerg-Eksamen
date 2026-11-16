@@ -42,7 +42,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
     }
     private static bool CanCreate(Role actor, Role target) => actor == Role.Admin;
 
-    public void DeleteUser(Role actorRole, int actorId, int targetId)
+    public void DeleteUser(Role actorRole, Guid actorId, Guid targetId)
     {
         var target = userRepository.GetById(targetId)
                      ?? throw new KeyNotFoundException("User not found.");
@@ -58,7 +58,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
     }
     private static bool CanDelete(Role actor, Role target) => actor == Role.Admin;
 
-    public UserResponse UpdateUser(Role actorRole, int actorId, int targetId, UpdateUserRequest request)
+    public UserResponse UpdateUser(Role actorRole, Guid actorId, Guid targetId, UpdateUserRequest request)
     {
         var target = userRepository.GetById(targetId)
                      ?? throw new KeyNotFoundException("User not found.");
