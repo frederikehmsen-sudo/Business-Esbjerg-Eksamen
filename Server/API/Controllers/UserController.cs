@@ -7,6 +7,7 @@ using Service.Implementation;
 
 namespace API.Controllers;
 
+[ApiController]
 [Route("api/[controller]")]
 public class UserController(IUserService userService) : ControllerBase
 {
