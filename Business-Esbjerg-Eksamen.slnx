@@ -4,5 +4,5 @@
     <Project Path="Server/Infrastructure/Infrastructure.csproj" />
     <Project Path="Server/Service/Service.csproj" />
   </Folder>
-  <Project Path="Business-Esbjerg-Eksamen.UnitTests/Business-Esbjerg-Eksamen.UnitTests.csproj" />
+  <Project Path="BusinessEsbjergEksamen.UnitTests/BusinessEsbjergEksamen.UnitTests.csproj" />
 </Solution>

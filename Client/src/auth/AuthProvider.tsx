@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         sessionStorage.setItem("token", data.token);
         sessionStorage.setItem("role", data.role);
+        api.setSecurityData(data.token);
         setToken(data.token);
         setRole(data.role);
         return data.role;
@@ -62,6 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function logout() {
         sessionStorage.removeItem("token");
         sessionStorage.removeItem("role");
+        api.setSecurityData(null);
         setToken(null);
         setRole(null);
     }
