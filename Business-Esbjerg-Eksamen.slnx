@@ -3,6 +3,7 @@
     <Project Path="Server/API/API.csproj" />
     <Project Path="Server/Infrastructure/Infrastructure.csproj" />
     <Project Path="Server/Service/Service.csproj" />
+    <Project Path="Server/Tests/Tests.csproj" />
   </Folder>
-  <Project Path="BusinessEsbjergEksamen.UnitTests/BusinessEsbjergEksamen.UnitTests.csproj" />
+  <Project Path="BusinessEsbjergEksamen.IntegrationTests/BusinessEsbjergEksamen.IntegrationTests.csproj" />
 </Solution>

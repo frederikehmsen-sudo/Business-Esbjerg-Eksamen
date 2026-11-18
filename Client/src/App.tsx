@@ -7,12 +7,15 @@ import {type FormEvent, useState} from "react";
 import type { LoginRequest } from "./models/login-request"
 import {useAuth} from "./auth/AuthProvider";
 import { Navigate, Route, Routes, useNavigate} from "react-router-dom"
+import AdminPage from "./pages/AdminPage";
+import { RequireRole } from "./auth/RequireRole";
 
 
 const homeFor = (role: string | null) => {
     if (role === "Admin") return "/admin";
     if (role === "Accountant") return "/accountant";
-    return "/employee";
+    if (role === "Employee") return "/employee";
+    return "/";
 };
 
 function LoginPage() {
@@ -45,7 +48,8 @@ function LoginPage() {
     }
 
 
-    if (token) return <Navigate to={homeFor(role)} replace />;
+    const home = homeFor(role);
+    if (token && home !== "/") return <Navigate to={home} replace />;
 
     return (
         <div className="app">
@@ -93,9 +97,18 @@ export function App() {
     return (
         <Routes>
             <Route path="/" element={<LoginPage />} />
-            {/*<Route path="/employee" element={<EmployeePage />} />*/}
-            {/*<Route path="/admin" element={<AdminPage />} />*/}
-            {/*<Route path="/accountant" element={<AccountantPage />} />*/}
+            <Route
+                path="/employee"
+                element={<RequireRole role="Employee"><h1>Employee</h1></RequireRole>}
+            />
+            <Route
+                path="/admin"
+                element={<RequireRole role="Admin"><AdminPage /></RequireRole>}
+            />
+            <Route
+                path="/accountant"
+                element={<RequireRole role="Accountant"><h1>Accountant</h1></RequireRole>}
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );

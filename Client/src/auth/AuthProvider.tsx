@@ -7,6 +7,7 @@ import {
 import type { LoginRequest } from "../models/login-request";
 import type { LoginResponse } from "../models/login-response";
 import {API_URL} from "@/config.ts";
+import { api } from "@/api/client";
 
 interface AuthContextValue {
     token: string | null;

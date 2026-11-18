@@ -33,12 +33,10 @@ app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().
 app.UseAuthentication();
 app.UseAuthorization();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();    // serves /swagger/v1/swagger.json
-    app.UseSwaggerUI();  // capital "UI" = Swashbuckle's UI at /swagger
-    app.MapGet("/", () => Results.Redirect("/swagger"));
-}
+app.UseSwagger();    // serves /swagger/v1/swagger.json
+app.UseSwaggerUI();  // capital "UI" = Swashbuckle's UI at /swagger
+app.MapGet("/", () => Results.Redirect("/swagger"));
+
 
 app.MapControllers();
 
