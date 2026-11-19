@@ -22,11 +22,11 @@ public class UserRepository : IUserRepository
             return false;
 
         // Inserts and returns the generated Id, so UserService can return it
-        user.Id = _userDb.InsertWithInt32Identity(user);
+        _userDb.Insert(user);
         return true;
     }
 
-    public User? GetById(int id) =>
+    public User? GetById(Guid id) =>
         _userDb.Users.FirstOrDefault(x => x.Id == id);
 
     public void DeleteUser(User user) =>
