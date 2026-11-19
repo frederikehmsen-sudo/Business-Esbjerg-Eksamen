@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Facet" Version="6.6.12" />
     <PackageReference Include="Facet.Extensions" Version="6.6.12" />
+    <PackageReference Include="linq2db.AspNet" Version="5.4.1.9" />
     <PackageReference Include="NSwag.AspNetCore" Version="14.7.1" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.14" />
   </ItemGroup>

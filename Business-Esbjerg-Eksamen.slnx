@@ -4,6 +4,6 @@
     <Project Path="Server/Infrastructure/Infrastructure.csproj" />
     <Project Path="Server/Service/Service.csproj" />
     <Project Path="Server/Tests/Tests.csproj" />
+    <Project Path="Server/BusinessEsbjergEksamen.IntegrationTests/BusinessEsbjergEksamen.IntegrationTests.csproj" />
   </Folder>
-  <Project Path="BusinessEsbjergEksamen.IntegrationTests/BusinessEsbjergEksamen.IntegrationTests.csproj" />
 </Solution>
