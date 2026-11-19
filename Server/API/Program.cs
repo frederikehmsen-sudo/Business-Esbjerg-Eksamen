@@ -20,7 +20,14 @@ if (string.IsNullOrWhiteSpace(jwtSecret) || jwtSecret.Length < 32)
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.ConfigureDomainServices(jwtSecret); // services, JWT auth and SwaggerGen (Swashbuckle)
-builder.Services.AddCors();
+
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+        policy.WithOrigins(allowedOrigins).AllowAnyHeader().AllowAnyMethod());
+});
 
 var app = builder.Build();
 
@@ -29,7 +36,7 @@ using (var scope = app.Services.CreateScope())
     scope.ServiceProvider.GetRequiredService<Seeder>().Seed();
 }
 
-app.UseCors(config => config.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin().SetIsOriginAllowed(_ => true));
+app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
