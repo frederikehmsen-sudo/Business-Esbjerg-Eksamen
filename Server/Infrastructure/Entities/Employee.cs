@@ -5,6 +5,7 @@ namespace Infrastructure.Entities;
 public class Employee
 {
     [PrimaryKey] public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserId { get; set; }  
     public string Name { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public DateOnly StartDate { get; set; }

@@ -19,7 +19,8 @@ if (string.IsNullOrWhiteSpace(jwtSecret) || jwtSecret.Length < 32)
 
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.ConfigureDomainServices(jwtSecret); // services, JWT auth and SwaggerGen (Swashbuckle)
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.ConfigureDomainServices(jwtSecret);
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
 
@@ -40,8 +41,8 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseSwagger();    // serves /swagger/v1/swagger.json
-app.UseSwaggerUI();  // capital "UI" = Swashbuckle's UI at /swagger
+app.UseSwagger();  
+app.UseSwaggerUI();  
 app.MapGet("/", () => Results.Redirect("/swagger"));
 
 
