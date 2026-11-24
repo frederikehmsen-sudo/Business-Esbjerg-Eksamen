@@ -5,11 +5,13 @@ using Service.Security;
 
 namespace API;
 
-public class Seeder(UserDatabase db, IPasswordHasher passwordHasher)
+public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
 {
     public void Seed()
     {   
         db.CreateTable<Employee>(tableOptions: TableOptions.CreateIfNotExists);
+        db.CreateTable<HolidayRuleSet>(tableOptions: TableOptions.CreateIfNotExists);
+        db.CreateTable<CalendarDayOff>(tableOptions: TableOptions.CreateIfNotExists);
         db.CreateTable<User>(tableOptions: TableOptions.CreateIfNotExists);
         if (db.Users.Count() == 0)
         {

@@ -5,7 +5,7 @@ using LinqToDB.Data;
 
 namespace Infrastructure.Repositories;
 
-public class EmployeeRepository(UserDatabase db) : IEmployeeRepository
+public class EmployeeRepository(AppDatabase db) : IEmployeeRepository
 {
     // transaction login and employee
     public void Create(Employee employee, User user)

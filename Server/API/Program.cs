@@ -7,8 +7,8 @@ using Service;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=db.db";
-var options = new DataOptions<UserDatabase>(new DataOptions().UseSQLite(connectionString));
-builder.Services.AddScoped<UserDatabase>(_ => new UserDatabase(options));
+var options = new DataOptions<AppDatabase>(new DataOptions().UseSQLite(connectionString));
+builder.Services.AddScoped<AppDatabase>(_ => new AppDatabase(options));
 builder.Services.AddScoped<Seeder>();
 
 var jwtSecret = builder.Configuration["JwtSecret"];
@@ -20,6 +20,7 @@ if (string.IsNullOrWhiteSpace(jwtSecret) || jwtSecret.Length < 32)
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IHolidayRuleSetRepository, HolidayRuleSetRepository>();
 builder.Services.ConfigureDomainServices(jwtSecret);
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
