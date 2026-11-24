@@ -14,4 +14,6 @@ public class AppDatabase : DataConnection
   public ITable<HolidayRuleSet> HolidayRuleSets => this.GetTable<HolidayRuleSet>();
   public ITable<CalendarDayOff> CalendarDayOffs => this.GetTable<CalendarDayOff>();
   public ITable<Employee> Employees => this.GetTable<Employee>();
+  
+  public ITable<WorkSchedule> WorkSchedules => this.GetTable<WorkSchedule>();
 }

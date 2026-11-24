@@ -21,7 +21,7 @@ public class UserRepository : IUserRepository
         if (_appDb.Users.Any(x => x.Username == user.Username))
             return false;
 
-        // Inserts and returns the generated Id, so UserService can return it
+        
         _appDb.Insert(user);
         return true;
     }

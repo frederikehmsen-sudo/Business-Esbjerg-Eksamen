@@ -13,6 +13,7 @@ public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
         db.CreateTable<HolidayRuleSet>(tableOptions: TableOptions.CreateIfNotExists);
         db.CreateTable<CalendarDayOff>(tableOptions: TableOptions.CreateIfNotExists);
         db.CreateTable<User>(tableOptions: TableOptions.CreateIfNotExists);
+        db.CreateTable<WorkSchedule>(tableOptions: TableOptions.CreateIfNotExists);
         if (db.Users.Count() == 0)
         {
             db.Insert(new User
