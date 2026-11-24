@@ -7,8 +7,8 @@ using Service;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=db.db";
-var options = new DataOptions<UserDatabase>(new DataOptions().UseSQLite(connectionString));
-builder.Services.AddScoped<UserDatabase>(_ => new UserDatabase(options));
+var options = new DataOptions<AppDatabase>(new DataOptions().UseSQLite(connectionString));
+builder.Services.AddScoped<AppDatabase>(_ => new AppDatabase(options));
 builder.Services.AddScoped<Seeder>();
 
 var jwtSecret = builder.Configuration["JwtSecret"];

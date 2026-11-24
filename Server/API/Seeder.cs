@@ -5,12 +5,13 @@ using Service.Security;
 
 namespace API;
 
-public class Seeder(UserDatabase db, IPasswordHasher passwordHasher)
+public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
 {
     public void Seed()
     {   
         db.CreateTable<Employee>(tableOptions: TableOptions.CreateIfNotExists);
         db.CreateTable<User>(tableOptions: TableOptions.CreateIfNotExists);
+        db.CreateTable<WorkSchedule>(tableOptions: TableOptions.CreateIfNotExists);
         if (db.Users.Count() == 0)
         {
             db.Insert(new User

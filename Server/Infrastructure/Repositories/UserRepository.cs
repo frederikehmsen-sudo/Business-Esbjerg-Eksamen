@@ -6,35 +6,35 @@ namespace Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly UserDatabase _userDb;
+    private readonly AppDatabase _appDb;
 
-    public UserRepository(UserDatabase userDb)
+    public UserRepository(AppDatabase appDb)
     {
-        _userDb = userDb;
+        _appDb = appDb;
     }
 
     public User? GetUserByUsername(string username) =>
-        _userDb.Users.FirstOrDefault(x => x.Username == username);
+        _appDb.Users.FirstOrDefault(x => x.Username == username);
 
     public bool CreateUser(User user)
     {
-        if (_userDb.Users.Any(x => x.Username == user.Username))
+        if (_appDb.Users.Any(x => x.Username == user.Username))
             return false;
 
-        // Inserts and returns the generated Id, so UserService can return it
-        _userDb.Insert(user);
+        
+        _appDb.Insert(user);
         return true;
     }
 
     public User? GetById(Guid id) =>
-        _userDb.Users.FirstOrDefault(x => x.Id == id);
+        _appDb.Users.FirstOrDefault(x => x.Id == id);
 
     public void DeleteUser(User user) =>
-        _userDb.Delete(user);
+        _appDb.Delete(user);
 
     public List<User> GetAll() =>
-        _userDb.Users.ToList();
+        _appDb.Users.ToList();
 
     public void UpdateUser(User user) =>
-        _userDb.Update(user);
+        _appDb.Update(user);
 }

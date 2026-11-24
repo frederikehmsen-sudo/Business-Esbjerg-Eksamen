@@ -4,12 +4,14 @@ using LinqToDB.Data;
 
 namespace Infrastructure.DataAccess;
 
-public class UserDatabase : DataConnection
+public class AppDatabase : DataConnection
 {
-  public UserDatabase(DataOptions<UserDatabase> options) : base(options.Options)
+  public AppDatabase(DataOptions<AppDatabase> options) : base(options.Options)
   {
   }
 
   public ITable<User> Users => this.GetTable<User>();
   public ITable<Employee> Employees => this.GetTable<Employee>();
+  
+  public ITable<WorkSchedule> WorkSchedules => this.GetTable<WorkSchedule>();
 }
