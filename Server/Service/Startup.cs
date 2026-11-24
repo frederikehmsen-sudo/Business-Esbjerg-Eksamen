@@ -18,6 +18,8 @@ public static class Startup
         services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
         services.AddScoped<ITokenService, JwtAuthorizationService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IHolidayRuleSetService, HolidayRuleSetService>();
+        services.AddSingleton(TimeProvider.System);
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

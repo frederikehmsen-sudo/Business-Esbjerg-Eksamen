@@ -10,10 +10,10 @@ public class CreateHolidayRuleSetRequest
     public string Name { get; set; } = string.Empty;
 
     [Required]
-    public DateOnly EffectiveFrom { get; set; }
+    public DateOnly? EffectiveFrom { get; set; }
 
     // Weeks 1–5
-    [Range(typeof(decimal), "0.01", "10")]
+    [Range(typeof(decimal), "0.01", "10", ParseLimitsInInvariantCulture = true)]
     public decimal Weeks1To5DaysEarnedPerMonth { get; set; }
     [Range(1, 12)] public int Weeks1To5EarningStartMonth { get; set; }
     [Range(1, 36)] public int Weeks1To5EarningLengthMonths { get; set; }
@@ -22,7 +22,7 @@ public class CreateHolidayRuleSetRequest
 
     // Week 6
     public bool Week6Enabled { get; set; }
-    [Range(typeof(decimal), "0", "40")]
+    [Range(typeof(decimal), "0", "40", ParseLimitsInInvariantCulture = true)]
     public decimal Week6HoursEarnedPerMonth { get; set; }
     [Range(1, 12)] public int Week6EarningStartMonth { get; set; }
     [Range(1, 36)] public int Week6EarningLengthMonths { get; set; }

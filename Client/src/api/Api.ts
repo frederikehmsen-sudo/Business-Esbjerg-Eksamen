@@ -17,6 +17,143 @@ export enum Role {
   Value2 = 2,
 }
 
+/** @format int32 */
+export enum RequestUnit {
+  Value0 = 0,
+}
+
+export interface CreateHolidayRuleSetRequest {
+  /**
+   * @minLength 3
+   * @maxLength 100
+   */
+  name: string;
+  /** @format date */
+  effectiveFrom: string;
+  /**
+   * @format double
+   * @min 0.01
+   * @max 10
+   */
+  weeks1To5DaysEarnedPerMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  weeks1To5EarningStartMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 36
+   */
+  weeks1To5EarningLengthMonths?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 36
+   */
+  weeks1To5UsageStartsMonthsAfterEarningStart?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 36
+   */
+  weeks1To5UsageLengthMonths?: number;
+  week6Enabled?: boolean;
+  /**
+   * @format double
+   * @min 0
+   * @max 40
+   */
+  week6HoursEarnedPerMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  week6EarningStartMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 36
+   */
+  week6EarningLengthMonths?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 36
+   */
+  week6UsageStartsMonthsAfterEarningStart?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 36
+   */
+  week6UsageLengthMonths?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 30
+   */
+  mainHolidayDays?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  mainHolidayWindowStartMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  mainHolidayWindowEndMonth?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 12
+   */
+  noticeMainHolidayMonths?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 12
+   */
+  noticeOtherHolidayMonths?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 30
+   */
+  maxTransferDays?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  weeks1To5TransferDeadlineMonth?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  week6TransferDeadlineMonth?: number;
+  /**
+   * @format int32
+   * @min 0
+   * @max 30
+   */
+  maxHolidayDebtDays?: number;
+  /**
+   * @format int32
+   * @min 1
+   * @max 12
+   */
+  debtClearedByMonth?: number;
+  requestUnit?: RequestUnit;
+}
+
 export interface CreateUserRequest {
   /**
    * @minLength 3
@@ -30,6 +167,60 @@ export interface CreateUserRequest {
    */
   password: string;
   role: Role;
+}
+
+export interface HolidayRuleSetResponse {
+  /** @format uuid */
+  id?: string;
+  name?: string | null;
+  /** @format date */
+  effectiveFrom?: string;
+  /** @format date-time */
+  createdAt?: string;
+  /** @format uuid */
+  createdBy?: string;
+  /** @format double */
+  weeks1To5DaysEarnedPerMonth?: number;
+  /** @format int32 */
+  weeks1To5EarningStartMonth?: number;
+  /** @format int32 */
+  weeks1To5EarningLengthMonths?: number;
+  /** @format int32 */
+  weeks1To5UsageStartsMonthsAfterEarningStart?: number;
+  /** @format int32 */
+  weeks1To5UsageLengthMonths?: number;
+  week6Enabled?: boolean;
+  /** @format double */
+  week6HoursEarnedPerMonth?: number;
+  /** @format int32 */
+  week6EarningStartMonth?: number;
+  /** @format int32 */
+  week6EarningLengthMonths?: number;
+  /** @format int32 */
+  week6UsageStartsMonthsAfterEarningStart?: number;
+  /** @format int32 */
+  week6UsageLengthMonths?: number;
+  /** @format int32 */
+  mainHolidayDays?: number;
+  /** @format int32 */
+  mainHolidayWindowStartMonth?: number;
+  /** @format int32 */
+  mainHolidayWindowEndMonth?: number;
+  /** @format int32 */
+  noticeMainHolidayMonths?: number;
+  /** @format int32 */
+  noticeOtherHolidayMonths?: number;
+  /** @format int32 */
+  maxTransferDays?: number;
+  /** @format int32 */
+  weeks1To5TransferDeadlineMonth?: number;
+  /** @format int32 */
+  week6TransferDeadlineMonth?: number;
+  /** @format int32 */
+  maxHolidayDebtDays?: number;
+  /** @format int32 */
+  debtClearedByMonth?: number;
+  requestUnit?: string | null;
 }
 
 export interface LoginRequest {
@@ -329,26 +520,85 @@ export class HttpClient<SecurityDataType = unknown> {
 export class Api<
   SecurityDataType extends unknown,
 > extends HttpClient<SecurityDataType> {
-  login = {
+  api = {
     /**
      * No description
      *
-     * @tags Login
-     * @name LoginCreate
-     * @request POST:/login
+     * @tags HolidayRuleSet
+     * @name HolidayRuleSetList
+     * @request GET:/api/HolidayRuleSet
      * @secure
      */
-    loginCreate: (data: LoginRequest, params: RequestParams = {}) =>
+    holidayRuleSetList: (params: RequestParams = {}) =>
+      this.request<HolidayRuleSetResponse[], any>({
+        path: `/api/HolidayRuleSet`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags HolidayRuleSet
+     * @name HolidayRuleSetCreate
+     * @request POST:/api/HolidayRuleSet
+     * @secure
+     */
+    holidayRuleSetCreate: (
+      data: CreateHolidayRuleSetRequest,
+      params: RequestParams = {},
+    ) =>
       this.request<void, any>({
-        path: `/login`,
+        path: `/api/HolidayRuleSet`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
         ...params,
       }),
-  };
-  api = {
+
+    /**
+     * No description
+     *
+     * @tags HolidayRuleSet
+     * @name HolidayRuleSetInForceList
+     * @request GET:/api/HolidayRuleSet/in-force
+     * @secure
+     */
+    holidayRuleSetInForceList: (
+      query?: {
+        /** @format date */
+        date?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/HolidayRuleSet/in-force`,
+        method: "GET",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags HolidayRuleSet
+     * @name HolidayRuleSetPresetsList
+     * @request GET:/api/HolidayRuleSet/presets
+     * @secure
+     */
+    holidayRuleSetPresetsList: (params: RequestParams = {}) =>
+      this.request<CreateHolidayRuleSetRequest[], any>({
+        path: `/api/HolidayRuleSet/presets`,
+        method: "GET",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
     /**
      * No description
      *
@@ -416,6 +666,25 @@ export class Api<
       this.request<void, any>({
         path: `/api/User/${id}`,
         method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+  };
+  login = {
+    /**
+     * No description
+     *
+     * @tags Login
+     * @name LoginCreate
+     * @request POST:/login
+     * @secure
+     */
+    loginCreate: (data: LoginRequest, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/login`,
+        method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
