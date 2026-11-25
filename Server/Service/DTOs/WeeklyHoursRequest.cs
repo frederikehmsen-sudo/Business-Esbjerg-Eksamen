@@ -17,5 +17,4 @@ public class WeeklyHoursRequest
 public class CreateWorkScheduleRequest : WeeklyHoursRequest
 {
     public DateOnly ValidFrom { get; set; }
-    public DateOnly? ValidTo { get; set; }
 }

@@ -1,13 +1,24 @@
+using System.Globalization;
 using API;
 using Infrastructure.DataAccess;
 using Infrastructure.Repositories;
 using LinqToDB;
+using LinqToDB.Mapping;
 using Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("Default") ?? "Data Source=db.db";
-var options = new DataOptions<AppDatabase>(new DataOptions().UseSQLite(connectionString));
+
+var mappingSchema = new MappingSchema();
+mappingSchema.SetConverter<DateTime, TimeOnly>(dt => TimeOnly.FromDateTime(dt));
+mappingSchema.SetConverter<string, TimeOnly>(s => TimeOnly.Parse(s, CultureInfo.InvariantCulture));
+
+var options = new DataOptions<AppDatabase>(
+    new DataOptions()
+        .UseSQLite(connectionString)
+        .UseMappingSchema(mappingSchema));
+
 builder.Services.AddScoped<AppDatabase>(_ => new AppDatabase(options));
 builder.Services.AddScoped<Seeder>();
 
@@ -20,6 +31,7 @@ if (string.IsNullOrWhiteSpace(jwtSecret) || jwtSecret.Length < 32)
 builder.Services.AddControllers();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
 builder.Services.AddScoped<IHolidayRuleSetRepository, HolidayRuleSetRepository>();
 builder.Services.ConfigureDomainServices(jwtSecret);
 
@@ -42,10 +54,9 @@ app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseSwagger();  
-app.UseSwaggerUI();  
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapGet("/", () => Results.Redirect("/swagger"));
-
 
 app.MapControllers();
 

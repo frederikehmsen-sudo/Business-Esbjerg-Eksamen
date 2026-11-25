@@ -31,7 +31,7 @@ public class UserController(IUserService userService) : ControllerBase
             return StatusCode(StatusCodes.Status201Created, created);
         }
         catch (UnauthorizedAccessException) { return Forbid(); }
-        catch (InvalidOperationException) { return Conflict("Username already exists."); }
+        catch (InvalidOperationException e) { return Conflict(e.Message); }
         catch (ArgumentException e) { return BadRequest(e.Message); }
     }
     

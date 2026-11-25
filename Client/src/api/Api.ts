@@ -22,6 +22,35 @@ export enum RequestUnit {
   Value0 = 0,
 }
 
+/** @format int32 */
+export enum EmploymentType {
+  Value0 = 0,
+  Value1 = 1,
+}
+
+export interface CreateEmployeeRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @format email
+   * @minLength 0
+   * @maxLength 254
+   */
+  email: string;
+  /** @format date */
+  startDate?: string;
+  employmentType?: EmploymentType;
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  initialPassword: string;
+  workSchedule: WeeklyHoursRequest;
+}
+
 export interface CreateHolidayRuleSetRequest {
   /**
    * @minLength 3
@@ -169,6 +198,44 @@ export interface CreateUserRequest {
   role: Role;
 }
 
+export interface CreateWorkScheduleRequest {
+  /** @format time */
+  mondayFrom?: string | null;
+  /** @format time */
+  mondayTo?: string | null;
+  /** @format time */
+  tuesdayFrom?: string | null;
+  /** @format time */
+  tuesdayTo?: string | null;
+  /** @format time */
+  wednesdayFrom?: string | null;
+  /** @format time */
+  wednesdayTo?: string | null;
+  /** @format time */
+  thursdayFrom?: string | null;
+  /** @format time */
+  thursdayTo?: string | null;
+  /** @format time */
+  fridayFrom?: string | null;
+  /** @format time */
+  fridayTo?: string | null;
+  /** @format date */
+  validFrom?: string;
+}
+
+export interface EmployeeResponse {
+  /** @format uuid */
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  /** @format date */
+  startDate?: string;
+  /** @format date */
+  endDate?: string | null;
+  employmentType?: string | null;
+  isActive?: boolean;
+}
+
 export interface HolidayRuleSetResponse {
   /** @format uuid */
   id?: string;
@@ -236,6 +303,29 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface ResetPasswordRequest {
+  /**
+   * @minLength 8
+   * @maxLength 128
+   */
+  newPassword: string;
+}
+
+export interface UpdateEmployeeRequest {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   */
+  name: string;
+  /**
+   * @format email
+   * @minLength 0
+   * @maxLength 254
+   */
+  email: string;
+  employmentType?: EmploymentType;
+}
+
 export interface UpdateUserRequest {
   /**
    * @minLength 3
@@ -256,6 +346,29 @@ export interface UserResponse {
   id?: string;
   username?: string | null;
   role?: string | null;
+}
+
+export interface WeeklyHoursRequest {
+  /** @format time */
+  mondayFrom?: string | null;
+  /** @format time */
+  mondayTo?: string | null;
+  /** @format time */
+  tuesdayFrom?: string | null;
+  /** @format time */
+  tuesdayTo?: string | null;
+  /** @format time */
+  wednesdayFrom?: string | null;
+  /** @format time */
+  wednesdayTo?: string | null;
+  /** @format time */
+  thursdayFrom?: string | null;
+  /** @format time */
+  thursdayTo?: string | null;
+  /** @format time */
+  fridayFrom?: string | null;
+  /** @format time */
+  fridayTo?: string | null;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -524,6 +637,132 @@ export class Api<
     /**
      * No description
      *
+     * @tags Employee
+     * @name EmployeeList
+     * @request GET:/api/Employee
+     * @secure
+     */
+    employeeList: (
+      query?: {
+        /** @default false */
+        includeFormer?: boolean;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<EmployeeResponse[], any>({
+        path: `/api/Employee`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Employee
+     * @name EmployeeCreate
+     * @request POST:/api/Employee
+     * @secure
+     */
+    employeeCreate: (data: CreateEmployeeRequest, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/Employee`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Employee
+     * @name EmployeeDetail
+     * @request GET:/api/Employee/{id}
+     * @secure
+     */
+    employeeDetail: (id: string, params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/Employee/${id}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Employee
+     * @name EmployeeUpdate
+     * @request PUT:/api/Employee/{id}
+     * @secure
+     */
+    employeeUpdate: (
+      id: string,
+      data: UpdateEmployeeRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/Employee/${id}`,
+        method: "PUT",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Employee
+     * @name EmployeeDelete
+     * @request DELETE:/api/Employee/{id}
+     * @secure
+     */
+    employeeDelete: (
+      id: string,
+      query?: {
+        /** @format date */
+        endDate?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/Employee/${id}`,
+        method: "DELETE",
+        query: query,
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags Employee
+     * @name EmployeeResetPasswordCreate
+     * @request POST:/api/Employee/{id}/reset-password
+     * @secure
+     */
+    employeeResetPasswordCreate: (
+      id: string,
+      data: ResetPasswordRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/Employee/${id}/reset-password`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags HolidayRuleSet
      * @name HolidayRuleSetList
      * @request GET:/api/HolidayRuleSet
@@ -669,6 +908,63 @@ export class Api<
         body: data,
         secure: true,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags WorkSchedule
+     * @name WorkScheduleEmployeeDetail
+     * @request GET:/api/WorkSchedule/employee/{employeeId}
+     * @secure
+     */
+    workScheduleEmployeeDetail: (
+      employeeId: string,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/WorkSchedule/employee/${employeeId}`,
+        method: "GET",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags WorkSchedule
+     * @name WorkScheduleEmployeeCreate
+     * @request POST:/api/WorkSchedule/employee/{employeeId}
+     * @secure
+     */
+    workScheduleEmployeeCreate: (
+      employeeId: string,
+      data: CreateWorkScheduleRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, any>({
+        path: `/api/WorkSchedule/employee/${employeeId}`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags WorkSchedule
+     * @name WorkScheduleMeList
+     * @request GET:/api/WorkSchedule/me
+     * @secure
+     */
+    workScheduleMeList: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/WorkSchedule/me`,
+        method: "GET",
+        secure: true,
         ...params,
       }),
   };

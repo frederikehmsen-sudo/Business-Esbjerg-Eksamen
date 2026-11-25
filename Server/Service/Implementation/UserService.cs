@@ -1,12 +1,14 @@
 ﻿using Infrastructure.Entities;
 using Infrastructure.Repositories;
-using Microsoft.AspNetCore.Identity;
 using Service.DTOs;
 using Service.Security;
 
 namespace Service.Implementation;
 
-public class UserService(IUserRepository userRepository, IPasswordHasher passwordHasher) : IUserService
+public class UserService(
+    IUserRepository userRepository,
+    IEmployeeRepository employeeRepository,
+    IPasswordHasher passwordHasher) : IUserService
 {
     public List<UserResponse> GetUsers(Role role)
     {
@@ -28,6 +30,9 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
         if (!CanCreate(actorRole, request.Role))
             throw new UnauthorizedAccessException("You are not allowed to create this role.");
         
+        if (IsSingleRole(request.Role) && RoleTaken(request.Role))
+            throw new InvalidOperationException($"There can only be one {request.Role} account.");
+
         var user = new User
         {
             Username = request.Username,
@@ -40,6 +45,7 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
 
         return new UserResponse(user.Id, user.Username, user.Role.ToString());
     }
+
     private static bool CanCreate(Role actor, Role target) => actor == Role.Admin;
 
     public void DeleteUser(Role actorRole, Guid actorId, Guid targetId)
@@ -49,13 +55,19 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
 
         if (target.Id == actorId)
             throw new InvalidOperationException("You cannot delete yourself.");
-        
+
         if (!CanDelete(actorRole, target.Role))
             throw new UnauthorizedAccessException("You are not allowed to delete this role.");
 
+        if (IsSingleRole(target.Role))
+            throw new InvalidOperationException($"You cannot delete the only {target.Role} account.");
+        
+        if (employeeRepository.GetByUserId(target.Id) is not null)
+            throw new InvalidOperationException("This user belongs to an employee. End the employment instead.");
 
         userRepository.DeleteUser(target);
     }
+
     private static bool CanDelete(Role actor, Role target) => actor == Role.Admin;
 
     public UserResponse UpdateUser(Role actorRole, Guid actorId, Guid targetId, UpdateUserRequest request)
@@ -70,13 +82,21 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
             throw new UnauthorizedAccessException("You are not allowed to edit this user.");
 
         var newRole = request.Role ?? target.Role;
-        
+
         if (!CanUpdate(actorRole, newRole))
             throw new UnauthorizedAccessException("You are not allowed to assign this role.");
 
-        
         if (target.Id == actorId && newRole != target.Role)
             throw new InvalidOperationException("You cannot change your own role.");
+
+        if (newRole != target.Role)
+        {
+            if (IsSingleRole(target.Role))
+                throw new InvalidOperationException($"You cannot demote the only {target.Role} account.");
+
+            if (IsSingleRole(newRole) && RoleTaken(newRole))
+                throw new InvalidOperationException($"There can only be one {newRole} account.");
+        }
 
         var existing = userRepository.GetUserByUsername(request.Username);
         if (existing != null && existing.Id != target.Id)
@@ -84,15 +104,18 @@ public class UserService(IUserRepository userRepository, IPasswordHasher passwor
 
         target.Username = request.Username;
         target.Role = newRole;
-        
+
         if (!string.IsNullOrWhiteSpace(request.Password))
             target.Password = passwordHasher.HashAndSaltPassword(request.Password);
-
 
         userRepository.UpdateUser(target);
 
         return new UserResponse(target.Id, target.Username, target.Role.ToString());
     }
-    
+
     private static bool CanUpdate(Role actor, Role target) => actor == Role.Admin;
+
+    private static bool IsSingleRole(Role role) => role is Role.Admin or Role.Accountant;
+
+    private bool RoleTaken(Role role) => userRepository.GetAll().Any(u => u.Role == role);
 }

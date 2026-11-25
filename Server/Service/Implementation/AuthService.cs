@@ -16,7 +16,8 @@ public class AuthService(
             return null;
 
         var user = userRepository.GetUserByUsername(request.Username);
-        if (user == null) return null;
+        
+        if (user == null || !user.IsActive) return null;
 
         if (!passwordHasher.VerifyPassword(request.Password, user.Password))
             return null;
