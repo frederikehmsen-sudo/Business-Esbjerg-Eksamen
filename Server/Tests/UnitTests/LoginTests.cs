@@ -29,13 +29,20 @@ public class LoginTests
 
         var userRepository = Substitute.For<IUserRepository>();
         userRepository.GetUserByUsername(Username).Returns(user);
+        
+        var employeeRepository = Substitute.For<IEmployeeRepository>();
 
         var passwordHasher = Substitute.For<IPasswordHasher>();
         passwordHasher.VerifyPassword(Password, StoredHash).Returns(true);
 
         _tokenService.GenerateToken(user).Returns(Token);
 
-        _authService = new AuthService(userRepository, passwordHasher, _tokenService);
+        _authService = new AuthService(
+            userRepository,
+            employeeRepository,
+            passwordHasher,
+            _tokenService,
+            TimeProvider.System);
     }
 
     [Fact]

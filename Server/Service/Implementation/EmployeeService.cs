@@ -18,17 +18,18 @@ public class EmployeeService(
 
     public List<EmployeeResponse> GetAll(bool includeFormer)
     {
-        var isActiveByUserId = userRepository.GetAll().ToDictionary(u => u.Id, u => u.IsActive);
+        var usersById = userRepository.GetAll().ToDictionary(u => u.Id);
 
-        return employeeRepository.GetAll(includeFormer)
-            .Select(e => ToResponse(e, isActiveByUserId.GetValueOrDefault(e.UserId)))
+        return employeeRepository.GetAll(includeFormer, Today)
+            .Where(e => usersById.ContainsKey(e.UserId))
+            .Select(e => ToResponse(e, usersById[e.UserId]))
             .ToList();
     }
 
     public EmployeeResponse GetById(Guid id)
     {
         var employee = GetEmployee(id);
-        return ToResponse(employee, GetUser(employee).IsActive);
+        return ToResponse(employee, GetUser(employee));
     }
 
     public EmployeeResponse Create(CreateEmployeeRequest request)
@@ -70,7 +71,7 @@ public class EmployeeService(
 
         employeeRepository.Create(employee, user, firstSchedule);
 
-        return ToResponse(employee, user.IsActive);
+        return ToResponse(employee, user);
     }
 
     public EmployeeResponse Update(Guid id, UpdateEmployeeRequest request)
@@ -93,7 +94,7 @@ public class EmployeeService(
 
         employeeRepository.Update(employee, user);
 
-        return ToResponse(employee, user.IsActive);
+        return ToResponse(employee, user);
     }
 
     public void EndEmployment(Guid id, DateOnly? endDate)
@@ -117,7 +118,6 @@ public class EmployeeService(
             current.ValidTo = end;
 
         employee.EndDate = end;
-        user.IsActive = false; 
 
         employeeRepository.EndEmployment(employee, user, current);
     }
@@ -170,6 +170,7 @@ public class EmployeeService(
             throw new ArgumentException("Password must be at least 8 characters.");
     }
 
-    private static EmployeeResponse ToResponse(Employee e, bool isActive) =>
-        new(e.Id, e.Name, e.Email, e.StartDate, e.EndDate, e.EmploymentType.ToString(), isActive);
+    private EmployeeResponse ToResponse(Employee e, User user) =>
+        new(e.Id, e.Name, e.Email, e.StartDate, e.EndDate, e.EmploymentType.ToString(),
+            IsActive: user.IsActive && (e.EndDate is null || e.EndDate >= Today));
 }

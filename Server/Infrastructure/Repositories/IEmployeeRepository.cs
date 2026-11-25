@@ -7,7 +7,7 @@ public interface IEmployeeRepository
     void Create(Employee employee, User user, WorkSchedule firstSchedule);
     Employee? GetById(Guid id);
     Employee? GetByUserId(Guid userId);
-    List<Employee> GetAll(bool includeFormer);
+    List<Employee> GetAll(bool includeFormer, DateOnly today);
     bool EmailExists(string email);
     void Update(Employee employee, User user);
     void EndEmployment(Employee employee, User user, WorkSchedule? scheduleToClose);

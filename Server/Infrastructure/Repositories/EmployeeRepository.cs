@@ -25,14 +25,11 @@ public class EmployeeRepository(AppDatabase db) : IEmployeeRepository
     public Employee? GetByUserId(Guid userId) =>
         db.Employees.FirstOrDefault(e => e.UserId == userId);
 
-    public List<Employee> GetAll(bool includeFormer)
+    public List<Employee> GetAll(bool includeFormer, DateOnly today)
     {
-        var today = DateOnly.FromDateTime(DateTime.Today);
         var query = db.Employees.AsQueryable();
-
         if (!includeFormer)
-            query = query.Where(e => e.EndDate == null || e.EndDate > today);
-
+            query = query.Where(e => e.EndDate == null || e.EndDate >= today);
         return query.OrderBy(e => e.Name).ToList();
     }
 
