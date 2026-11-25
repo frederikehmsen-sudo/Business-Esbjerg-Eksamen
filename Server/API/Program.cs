@@ -33,6 +33,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IWorkScheduleRepository, WorkScheduleRepository>();
 builder.Services.AddScoped<IHolidayRuleSetRepository, HolidayRuleSetRepository>();
+builder.Services.AddScoped<ICalendarDayOffRepository, CalendarDayOffRepository>();
 builder.Services.ConfigureDomainServices(jwtSecret);
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();

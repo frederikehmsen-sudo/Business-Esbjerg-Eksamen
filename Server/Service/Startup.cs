@@ -21,6 +21,7 @@ public static class Startup
         services.AddScoped<IWorkScheduleService, WorkScheduleService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IHolidayRuleSetService, HolidayRuleSetService>();
+        services.AddScoped<ICalendarDayOffService, CalendarDayOffService>();
         services.AddSingleton(TimeProvider.System);
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

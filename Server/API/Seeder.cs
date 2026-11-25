@@ -12,6 +12,8 @@ public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
     private static readonly Guid AdminId = Guid.Parse("11111111-1111-1111-1111-111111111111");
     private static readonly Guid AccountantId = Guid.Parse("22222222-2222-2222-2222-222222222222");
     private static readonly Guid BusinessEsbjergRuleSetId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+    
+    private const int FirstCalendarYear = 2020;
 
     public void Seed()
     {
@@ -23,6 +25,7 @@ public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
 
         SeedUsers();
         SeedHolidayRuleSet();
+        SeedCalendarDaysOff();
     }
 
     private void SeedUsers()
@@ -45,7 +48,7 @@ public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
             Role = Role.Accountant
         });
     }
-    
+
     private void SeedHolidayRuleSet()
     {
         if (db.HolidayRuleSets.Any(r => r.Id == BusinessEsbjergRuleSetId))
@@ -62,5 +65,20 @@ public class Seeder(AppDatabase db, IPasswordHasher passwordHasher)
         ruleSet.Id = BusinessEsbjergRuleSetId;
 
         db.Insert(ruleSet);
+    }
+
+    // Seeds Danish public holidays + company days off from 2020 up to next year.
+    private void SeedCalendarDaysOff()
+    {
+        if (db.CalendarDayOffs.Any())
+            return;
+
+        var lastYear = DateTime.Today.Year + 1;
+
+        for (var year = FirstCalendarYear; year <= lastYear; year++)
+        {
+            foreach (var day in DanishHolidayCalendar.ForYear(year))
+                db.Insert(CalendarDayOffMapper.ToEntity(day));
+        }
     }
 }
