@@ -17,7 +17,12 @@ public static class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IPasswordHasher, Argon2PasswordHasher>();
         services.AddScoped<ITokenService, JwtAuthorizationService>();
+        services.AddScoped<IEmployeeService, EmployeeService>();
+        services.AddScoped<IWorkScheduleService, WorkScheduleService>();
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IHolidayRuleSetService, HolidayRuleSetService>();
+        services.AddScoped<ICalendarDayOffService, CalendarDayOffService>();
+        services.AddSingleton(TimeProvider.System);
 
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

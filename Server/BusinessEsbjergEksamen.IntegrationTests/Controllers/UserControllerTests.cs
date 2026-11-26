@@ -11,8 +11,8 @@ public class UserControllerTests(CustomWebApplicationFactory factory) : IClassFi
 {
     private readonly HttpClient _client = factory.CreateClient();
     
-    private const string AdminUsername = "Bennington";
-    private const string AdminPassword = "ben";
+    private const string AdminUsername = "Admin";
+    private const string AdminPassword = "123";
 
     private async Task<string> LoginAsAdminAsync()
     {
