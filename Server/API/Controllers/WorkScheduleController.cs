@@ -19,6 +19,8 @@ public class WorkScheduleController(IWorkScheduleService workScheduleService) : 
     
     [Authorize]
     [HttpGet("employee/{employeeId:guid}")]
+    [ProducesResponseType(typeof(List<WorkScheduleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult GetForEmployee(Guid employeeId)
     {
         try { return Ok(workScheduleService.GetForEmployee(ActorRole, ActorId, employeeId)); }
@@ -28,6 +30,8 @@ public class WorkScheduleController(IWorkScheduleService workScheduleService) : 
     
     [Authorize(Roles = "Employee")]
     [HttpGet("me")]
+    [ProducesResponseType(typeof(List<WorkScheduleResponse>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult GetMine()
     {
         try { return Ok(workScheduleService.GetMine(ActorId)); }
@@ -36,6 +40,10 @@ public class WorkScheduleController(IWorkScheduleService workScheduleService) : 
     
     [Authorize(Roles = "Admin,Accountant")]
     [HttpPost("employee/{employeeId:guid}")]
+    [ProducesResponseType(typeof(WorkScheduleResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult Add(Guid employeeId, [FromBody] CreateWorkScheduleRequest request)
     {
         try

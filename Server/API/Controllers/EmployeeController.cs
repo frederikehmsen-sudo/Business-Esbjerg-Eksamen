@@ -11,12 +11,15 @@ namespace API.Controllers;
 public class EmployeeController(IEmployeeService employeeService) : ControllerBase
 {
     [HttpGet]
+    [ProducesResponseType(typeof(List<EmployeeResponse>), StatusCodes.Status200OK)]
     public List<EmployeeResponse> GetAll([FromQuery] bool includeFormer = false)
     {
         return employeeService.GetAll(includeFormer);
     }
 
     [HttpGet("{id:guid}")]
+    [ProducesResponseType(typeof(EmployeeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult GetById(Guid id)
     {
         try { return Ok(employeeService.GetById(id)); }
@@ -24,6 +27,9 @@ public class EmployeeController(IEmployeeService employeeService) : ControllerBa
     }
 
     [HttpPost]
+    [ProducesResponseType(typeof(EmployeeResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult Create([FromBody] CreateEmployeeRequest request)
     {
         try
@@ -36,6 +42,10 @@ public class EmployeeController(IEmployeeService employeeService) : ControllerBa
     }
 
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(EmployeeResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult Update(Guid id, [FromBody] UpdateEmployeeRequest request)
     {
         try { return Ok(employeeService.Update(id, request)); }
@@ -45,6 +55,10 @@ public class EmployeeController(IEmployeeService employeeService) : ControllerBa
     }
     
     [HttpDelete("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status409Conflict)]
     public IActionResult EndEmployment(Guid id, [FromQuery] DateOnly? endDate)
     {
         try
@@ -58,6 +72,9 @@ public class EmployeeController(IEmployeeService employeeService) : ControllerBa
     }
 
     [HttpPost("{id:guid}/reset-password")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult ResetPassword(Guid id, [FromBody] ResetPasswordRequest request)
     {
         try

@@ -23,6 +23,7 @@ public class UserController(IUserService userService) : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status201Created)] 
     public IActionResult CreateUser([FromBody] CreateUserRequest request)
     {
         try
@@ -53,6 +54,7 @@ public class UserController(IUserService userService) : ControllerBase
     
     [Authorize(Roles = "Admin")]
     [HttpPut("{id:guid}")]
+    [ProducesResponseType(typeof(UserResponse), StatusCodes.Status200OK)]
     public IActionResult UpdateUser(Guid id, [FromBody] UpdateUserRequest request)
     {
         try

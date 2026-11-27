@@ -26,6 +26,8 @@ public class HolidayRuleSetController(IHolidayRuleSetService holidayRuleSetServi
     
     [Authorize]
     [HttpGet("in-force")]
+    [ProducesResponseType(typeof(HolidayRuleSetResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status404NotFound)]
     public IActionResult GetInForce([FromQuery] DateOnly date)
     {
         try
@@ -44,6 +46,8 @@ public class HolidayRuleSetController(IHolidayRuleSetService holidayRuleSetServi
     
     [Authorize(Roles = "Admin")]
     [HttpPost]
+    [ProducesResponseType(typeof(HolidayRuleSetResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(string), StatusCodes.Status400BadRequest)]
     public IActionResult Create([FromBody] CreateHolidayRuleSetRequest request)
     {
         try

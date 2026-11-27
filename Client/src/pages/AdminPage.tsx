@@ -7,7 +7,7 @@ export default function AdminPage() {
 
     return (
         <div className="app">
-            <h1>Admin</h1>
+            <h1 className="text-2xl font-bold text-amber-300 underline">Admin</h1>
             <button
                 className="send-button"
                 onClick={() => {

@@ -10,6 +10,8 @@ public class LoginController(IAuthService authService, IUserService userService)
 {
     [AllowAnonymous]
     [HttpPost("/login")]
+    [ProducesResponseType(typeof(LoginResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public IActionResult Login([FromBody] LoginRequest request)
     {
         var result = authService.Login(request);

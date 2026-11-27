@@ -10,22 +10,44 @@
  * ---------------------------------------------------------------
  */
 
-/** @format int32 */
 export enum Role {
-  Value0 = 0,
-  Value1 = 1,
-  Value2 = 2,
+  Employee = "Employee",
+  Accountant = "Accountant",
+  Admin = "Admin",
 }
 
-/** @format int32 */
 export enum RequestUnit {
-  Value0 = 0,
+  WholeDays = "WholeDays",
 }
 
-/** @format int32 */
 export enum EmploymentType {
-  Value0 = 0,
-  Value1 = 1,
+  PartTime = "PartTime",
+  FullTime = "FullTime",
+}
+
+export enum DayOffType {
+  PublicHoliday = "PublicHoliday",
+  CompanyDayOff = "CompanyDayOff",
+}
+
+export interface CalendarDayOffResponse {
+  /** @format uuid */
+  id?: string;
+  /** @format date */
+  date?: string;
+  name?: string | null;
+  type?: string | null;
+}
+
+export interface CreateCalendarDayOffRequest {
+  /** @format date */
+  date: string;
+  /**
+   * @minLength 2
+   * @maxLength 100
+   */
+  name: string;
+  type: DayOffType;
 }
 
 export interface CreateEmployeeRequest {
@@ -303,6 +325,21 @@ export interface LoginRequest {
   password: string;
 }
 
+export interface LoginResponse {
+  token?: string | null;
+  role?: string | null;
+}
+
+export interface ProblemDetails {
+  type?: string | null;
+  title?: string | null;
+  /** @format int32 */
+  status?: number | null;
+  detail?: string | null;
+  instance?: string | null;
+  [key: string]: any;
+}
+
 export interface ResetPasswordRequest {
   /**
    * @minLength 8
@@ -369,6 +406,28 @@ export interface WeeklyHoursRequest {
   fridayFrom?: string | null;
   /** @format time */
   fridayTo?: string | null;
+}
+
+export interface WorkScheduleDayResponse {
+  day?: string | null;
+  /** @format time */
+  from?: string | null;
+  /** @format time */
+  to?: string | null;
+  /** @format double */
+  hours?: number;
+}
+
+export interface WorkScheduleResponse {
+  /** @format uuid */
+  id?: string;
+  /** @format date */
+  validFrom?: string;
+  /** @format date */
+  validTo?: string | null;
+  days?: WorkScheduleDayResponse[] | null;
+  /** @format double */
+  weeklyHours?: number;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -637,6 +696,87 @@ export class Api<
     /**
      * No description
      *
+     * @tags CalendarDayOff
+     * @name CalendarDayOffList
+     * @request GET:/api/CalendarDayOff
+     * @secure
+     */
+    calendarDayOffList: (
+      query?: {
+        /** @format date */
+        from?: string;
+        /** @format date */
+        to?: string;
+      },
+      params: RequestParams = {},
+    ) =>
+      this.request<CalendarDayOffResponse[], string>({
+        path: `/api/CalendarDayOff`,
+        method: "GET",
+        query: query,
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags CalendarDayOff
+     * @name CalendarDayOffCreate
+     * @request POST:/api/CalendarDayOff
+     * @secure
+     */
+    calendarDayOffCreate: (
+      data: CreateCalendarDayOffRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<CalendarDayOffResponse, string>({
+        path: `/api/CalendarDayOff`,
+        method: "POST",
+        body: data,
+        secure: true,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags CalendarDayOff
+     * @name CalendarDayOffGenerateCreate
+     * @request POST:/api/CalendarDayOff/generate/{year}
+     * @secure
+     */
+    calendarDayOffGenerateCreate: (year: number, params: RequestParams = {}) =>
+      this.request<CalendarDayOffResponse[], string>({
+        path: `/api/CalendarDayOff/generate/${year}`,
+        method: "POST",
+        secure: true,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @tags CalendarDayOff
+     * @name CalendarDayOffDelete
+     * @request DELETE:/api/CalendarDayOff/{id}
+     * @secure
+     */
+    calendarDayOffDelete: (id: string, params: RequestParams = {}) =>
+      this.request<void, string>({
+        path: `/api/CalendarDayOff/${id}`,
+        method: "DELETE",
+        secure: true,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
      * @tags Employee
      * @name EmployeeList
      * @request GET:/api/Employee
@@ -667,12 +807,13 @@ export class Api<
      * @secure
      */
     employeeCreate: (data: CreateEmployeeRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<EmployeeResponse, string>({
         path: `/api/Employee`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -685,10 +826,11 @@ export class Api<
      * @secure
      */
     employeeDetail: (id: string, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<EmployeeResponse, string>({
         path: `/api/Employee/${id}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -705,12 +847,13 @@ export class Api<
       data: UpdateEmployeeRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<EmployeeResponse, string>({
         path: `/api/Employee/${id}`,
         method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -730,7 +873,7 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<void, string>({
         path: `/api/Employee/${id}`,
         method: "DELETE",
         query: query,
@@ -751,7 +894,7 @@ export class Api<
       data: ResetPasswordRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<void, string>({
         path: `/api/Employee/${id}/reset-password`,
         method: "POST",
         body: data,
@@ -789,12 +932,13 @@ export class Api<
       data: CreateHolidayRuleSetRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<HolidayRuleSetResponse, string>({
         path: `/api/HolidayRuleSet`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -813,11 +957,12 @@ export class Api<
       },
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<HolidayRuleSetResponse, string>({
         path: `/api/HolidayRuleSet/in-force`,
         method: "GET",
         query: query,
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -864,12 +1009,13 @@ export class Api<
      * @secure
      */
     userCreate: (data: CreateUserRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<UserResponse, any>({
         path: `/api/User`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -902,12 +1048,13 @@ export class Api<
       data: UpdateUserRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<UserResponse, any>({
         path: `/api/User/${id}`,
         method: "PUT",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -923,10 +1070,11 @@ export class Api<
       employeeId: string,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<WorkScheduleResponse[], string>({
         path: `/api/WorkSchedule/employee/${employeeId}`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
 
@@ -943,12 +1091,13 @@ export class Api<
       data: CreateWorkScheduleRequest,
       params: RequestParams = {},
     ) =>
-      this.request<void, any>({
+      this.request<WorkScheduleResponse, string>({
         path: `/api/WorkSchedule/employee/${employeeId}`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
 
@@ -961,10 +1110,11 @@ export class Api<
      * @secure
      */
     workScheduleMeList: (params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<WorkScheduleResponse[], string>({
         path: `/api/WorkSchedule/me`,
         method: "GET",
         secure: true,
+        format: "json",
         ...params,
       }),
   };
@@ -978,12 +1128,13 @@ export class Api<
      * @secure
      */
     loginCreate: (data: LoginRequest, params: RequestParams = {}) =>
-      this.request<void, any>({
+      this.request<LoginResponse, ProblemDetails>({
         path: `/login`,
         method: "POST",
         body: data,
         secure: true,
         type: ContentType.Json,
+        format: "json",
         ...params,
       }),
   };
