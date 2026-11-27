@@ -172,5 +172,7 @@ public class EmployeeService(
 
     private EmployeeResponse ToResponse(Employee e, User user) =>
         new(e.Id, e.Name, e.Email, e.StartDate, e.EndDate, e.EmploymentType.ToString(),
-            IsActive: user.IsActive && (e.EndDate is null || e.EndDate >= Today));
+            IsActive: user.IsActive
+                      && e.StartDate <= Today
+                      && (e.EndDate is null || e.EndDate >= Today));
 }

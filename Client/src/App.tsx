@@ -7,8 +7,13 @@ import {type FormEvent, useState} from "react";
 import type { LoginRequest } from "./models/login-request"
 import {useAuth} from "./auth/AuthProvider";
 import { Navigate, Route, Routes, useNavigate} from "react-router-dom"
-import AdminPage from "./pages/AdminPage";
 import { RequireRole } from "./auth/RequireRole";
+import AdminLayout from "./pages/admin/AdminLayout";
+import EmployeesPage from "./pages/admin/EmployeesPage";
+import EmployeeDetailPage from "./pages/admin/EmployeeDetailPage";
+import RulesPage from "./pages/admin/RulesPage";
+import CalendarPage from "./pages/admin/CalendarPage";
+import NewEmployeePage from "./pages/admin/NewEmployeePage";
 
 
 const homeFor = (role: string | null) => {
@@ -103,8 +108,15 @@ export function App() {
             />
             <Route
                 path="/admin"
-                element={<RequireRole role="Admin"><AdminPage /></RequireRole>}
-            />
+                element={<RequireRole role="Admin"><AdminLayout /></RequireRole>}
+            >
+                <Route index element={<Navigate to="employees" replace />} />
+                <Route path="employees" element={<EmployeesPage />} />
+                <Route path="employees/:id" element={<EmployeeDetailPage />} />
+                <Route path="employees/new" element={<NewEmployeePage />} />
+                <Route path="rules" element={<RulesPage />} />
+                <Route path="calendar" element={<CalendarPage />} />
+            </Route>
             <Route
                 path="/accountant"
                 element={<RequireRole role="Accountant"><h1>Accountant</h1></RequireRole>}

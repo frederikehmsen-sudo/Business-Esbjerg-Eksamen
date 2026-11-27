@@ -21,10 +21,14 @@ public class AuthService(
 
         var user = userRepository.GetUserByUsername(request.Username);
         if (user == null || !user.IsActive) return null;
-
+        
         // Admin/Accountant have no Employee row, so this only applies to employees.
         var employee = employeeRepository.GetByUserId(user.Id);
-        if (employee?.EndDate is { } end && end < Today) return null;
+        if (employee is not null)
+        {
+            if (employee.StartDate > Today) return null;
+            if (employee.EndDate is { } end && end < Today) return null;
+        }
 
         if (!passwordHasher.VerifyPassword(request.Password, user.Password))
             return null;

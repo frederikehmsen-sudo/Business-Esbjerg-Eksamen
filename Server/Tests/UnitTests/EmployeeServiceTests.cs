@@ -72,6 +72,23 @@ public class EmployeeServiceTests
         Assert.Equal(endDate, current.ValidTo);
         _employeeRepository.Received(1).EndEmployment(employee, user, current);
     }
+    
+    [Theory]
+    [InlineData(2026, 11, 27, false)]
+    [InlineData(2026, 11, 26, true)]
+    [InlineData(2025, 1, 1, true)]
+    public void GetById_IsActiveDependsOnStartDate(int year, int month, int day, bool expected)
+    {
+        // Arrange
+        var (employee, _) = ExistingEmployee();
+        employee.StartDate = new DateOnly(year, month, day);
+
+        // Act
+        var result = _service.GetById(employee.Id);
+
+        // Assert
+        Assert.Equal(expected, result.IsActive);
+    }
 
     [Fact]
     public void EndEmployment_AlreadyEnded_Throws()
